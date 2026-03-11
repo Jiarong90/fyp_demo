@@ -1,0 +1,24 @@
+# Git
+.git
+.gitignore
+
+# macOS
+.DS_Store
+
+# Node
+**/node_modules
+**/npm-debug.log*
+**/yarn-error.log*
+
+# Env / secrets
+**/.env
+**/.env.*
+
+# Editor
+.vscode
+.idea
+
+# Build/cache
+**/.cache
+**/dist
+**/build

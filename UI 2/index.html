@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FAST - Traffic Forecasting Web App</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="app">
+    <!-- 顶栏 -->
+    <header class="header">
+      <div class="logo">
+        <span class="icon-pin"></span>
+        <span>FAST</span>
+      </div>
+      <div class="search-wrap">
+        <span class="icon-search"></span>
+        <input type="text" class="search-input" placeholder="Search location, route, or incident..." />
+      </div>
+      <div class="header-right">
+        <span class="icon-bell"></span>
+        <!-- 未登录：显示 LOGIN 按钮 -->
+        <a href="#login" class="btn-header-login" id="header-login-btn">LOGIN</a>
+        <!-- 已登录：显示头像与下拉 -->
+        <div class="user-menu-wrap hidden" id="user-menu-wrap">
+          <span class="icon-user" id="user-avatar-btn" title="Account"></span>
+          <span class="icon-chevron-down" id="user-chevron"></span>
+          <div class="user-dropdown" id="user-dropdown">
+            <div class="user-dropdown-head">LOGGED IN AS</div>
+            <div class="user-dropdown-name" id="user-display-name">Jane Cooper</div>
+            <a href="#" class="user-dropdown-item"><span class="icon-profile"></span> Profile</a>
+            <a href="#" class="user-dropdown-item"><span class="icon-saved"></span> Saved Routes</a>
+            <a href="#" class="user-dropdown-item"><span class="icon-settings"></span> Settings</a>
+            <button type="button" class="user-dropdown-item delete-account"><span class="icon-warning"></span> Delete Account</button>
+            <button type="button" class="user-dropdown-item logout"><span class="icon-logout"></span> Log Out</button>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- 主导航 -->
+    <nav class="main-nav">
+      <a href="#dashboard" class="nav-tab active" data-page="dashboard">Dashboard</a>
+      <a href="#map-view" class="nav-tab" data-page="map-view">Map View</a>
+      <a href="#route-planner" class="nav-tab" data-page="route-planner">Route Planner</a>
+      <a href="#weather" class="nav-tab" data-page="weather">Weather</a>
+      <a href="#alerts" class="nav-tab" data-page="alerts">Alerts</a>
+    </nav>
+
+    <!-- Login -->
+    <main id="login" class="page auth-page">
+      <div class="auth-card">
+        <h1 class="auth-title">WELCOME BACK</h1>
+        <p class="auth-desc">Access your saved routes and preferences.</p>
+        <form class="auth-form" id="login-form">
+          <label class="auth-label">EMAIL ADDRESS</label>
+          <div class="input-with-icon">
+            <span class="icon-envelope"></span>
+            <input type="email" placeholder="name@example.com" required />
+          </div>
+          <div class="auth-row">
+            <label class="auth-label">PASSWORD</label>
+            <a href="#" class="auth-link">FORGOT?</a>
+          </div>
+          <div class="input-with-icon">
+            <span class="icon-lock"></span>
+            <input type="password" placeholder="••••••••" required />
+          </div>
+          <button type="submit" class="btn-auth">→ LOGIN →</button>
+        </form>
+        <p class="auth-switch">Don't have an account? <a href="#signup">Sign up</a></p>
+      </div>
+      <span class="help-icon auth-help">?</span>
+    </main>
+
+    <!-- Sign up -->
+    <main id="signup" class="page auth-page">
+      <div class="auth-card">
+        <h1 class="auth-title">JOIN FAST</h1>
+        <p class="auth-desc">Create an account to unlock personalized features.</p>
+        <form class="auth-form" id="signup-form">
+          <label class="auth-label">FULL NAME</label>
+          <input type="text" placeholder="Enter your name" class="auth-input" id="signup-name" required />
+          <label class="auth-label">EMAIL ADDRESS</label>
+          <div class="input-with-icon">
+            <span class="icon-envelope"></span>
+            <input type="email" placeholder="name@example.com" id="signup-email" required />
+          </div>
+          <label class="auth-label">PASSWORD</label>
+          <div class="input-with-icon">
+            <span class="icon-lock"></span>
+            <input type="password" placeholder="At least 6 chars, Aa + 0-9" id="signup-password" required />
+          </div>
+          <div class="auth-row">
+            <label class="auth-label">EMAIL VERIFICATION CODE</label>
+            <button type="button" class="auth-link" id="signup-send-code-btn">SEND CODE</button>
+          </div>
+          <input type="text" placeholder="Enter 6-digit code" class="auth-input" id="signup-code" maxlength="6" />
+          <p class="auth-note">Password must include uppercase, lowercase, and a number (min 6 chars).</p>
+          <p class="auth-error" id="signup-feedback"></p>
+          <button type="submit" class="btn-auth"><span class="icon-people"></span> VERIFY & CREATE ACCOUNT</button>
+        </form>
+        <hr class="auth-hr" />
+        <p class="auth-switch">Already have an account? <a href="#login">Log in</a></p>
+      </div>
+      <span class="help-icon auth-help">?</span>
+    </main>
+
+    <!-- Dashboard -->
+    <main id="dashboard" class="page active">
+      <section class="traffic-summary">
+        <h1 class="section-head">Traffic Summary</h1>
+        <p class="summary-meta" id="summary-last-updated">Last updated: --</p>
+        <a href="#" class="link-right">View all alerts →</a>
+      </section>
+
+      <section class="incident-overview card" id="incident-overview-section">
+        <div class="card-head">
+          <h2 class="card-title">Incident Overview</h2>
+          <span class="icon-trend-up"></span>
+          <a href="#" class="link-right">VIEW ON MAP →</a>
+          <span class="icon-pin small"></span>
+        </div>
+        <div class="incident-grid">
+          <div class="incident-total">
+            <span class="icon-warning"></span>
+            <span class="total-label">▲ TOTAL</span>
+            <span class="total-num" id="incident-total-num">--</span>
+            <span class="total-desc">Active incidents</span>
+          </div>
+          <div class="severity-blocks">
+            <div class="severity high">
+              <span class="dot"></span>
+              <span class="num" id="severity-high-num">--</span>
+              <span class="label">Critical impact</span>
+              <span class="tag">HIGH SEVERITY</span>
+            </div>
+            <div class="severity medium">
+              <span class="dot"></span>
+              <span class="num" id="severity-medium-num">--</span>
+              <span class="label">Moderate impact</span>
+              <span class="tag">MEDIUM SEVERITY</span>
+            </div>
+            <div class="severity low">
+              <span class="dot"></span>
+              <span class="num" id="severity-low-num">--</span>
+              <span class="label">Minor impact</span>
+              <span class="tag">LOW SEVERITY</span>
+            </div>
+          </div>
+        </div>
+        <div class="incident-footer">
+          <span id="incident-highest-severity">Highest severity: --</span>
+          <span id="incident-max-radius">Max congestion radius: --</span>
+        </div>
+      </section>
+
+      <div class="live-cards">
+        <div class="live-card congestion">
+          <span class="live-badge">Live</span>
+          <span class="icon-chart"></span>
+          <h3 class="live-title">Current Congestion</h3>
+          <p class="live-value yellow">Moderate</p>
+          <p class="live-desc">Average speed: 45 km/h</p>
+          <div class="progress-bar yellow"></div>
+        </div>
+        <div class="live-card incidents">
+          <span class="live-badge">Live</span>
+          <span class="icon-warning red"></span>
+          <h3 class="live-title">Active Incidents</h3>
+          <p class="live-value" id="live-incidents-total">--</p>
+          <p class="live-desc" id="live-incidents-breakdown">--</p>
+          <div class="mini-bars">
+            <span></span><span></span><span></span><span></span><span></span>
+          </div>
+        </div>
+        <div class="live-card weather">
+          <span class="live-badge">Live</span>
+          <span class="icon-cloud"></span>
+          <h3 class="live-title">Weather Status</h3>
+          <p class="live-value blue">Cloudy</p>
+          <p class="live-desc">28°C, No rain expected</p>
+          <label class="checkbox-label"><input type="checkbox" checked /> Good driving conditions</label>
+        </div>
+      </div>
+
+      <section class="recent-updates" id="recent-updates-section">
+        <div class="recent-updates-head">
+          <h2 class="subsection-title">Recent Updates</h2>
+          <div class="recent-actions">
+            <button type="button" class="btn-dark hidden" id="admin-incident-source-btn">DATA: LTA LIVE</button>
+            <button type="button" class="btn-dark" id="incident-sort-btn">SORT: TIME</button>
+          </div>
+        </div>
+        <ul class="updates-list" id="dashboard-updates-list"></ul>
+        <h2 class="subsection-title evidence-title">Incident Camera Evidence</h2>
+        <div id="dashboard-evidence-list" class="evidence-grid"></div>
+      </section>
+
+      <section class="admin-users-panel hidden" id="admin-users-panel">
+        <div class="admin-users-head">
+          <h2 class="subsection-title">User Registration Analytics</h2>
+          <button type="button" class="btn-dark" id="admin-users-refresh-btn">REFRESH</button>
+        </div>
+        <div class="admin-user-stats" id="admin-user-stats"></div>
+        <div class="admin-users-table-wrap">
+          <table class="admin-users-table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Role</th>
+                <th>Verified</th>
+                <th>Created At</th>
+              </tr>
+            </thead>
+            <tbody id="admin-users-tbody"></tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+
+    <!-- Map View -->
+    <main id="map-view" class="page">
+      <aside class="sidebar active-reports">
+        <h2 class="sidebar-title">▲ ACTIVE REPORTS</h2>
+        <p class="sidebar-sub"><span id="map-live-count">0</span> CAMERAS • LIVE</p>
+        <div id="camera-report-list"></div>
+      </aside>
+      <div class="map-area">
+        <div class="map-toolbar">
+          <button type="button" class="btn-dark"><span class="dot red"></span> LIVE MONITORING</button>
+          <button type="button" class="btn-dark" id="map-toggle-incidents-btn"><span class="icon-warning red"></span> SHOW LTA INCIDENTS</button>
+          <button type="button" class="btn-dark"><span class="icon-plane"></span> SUBMIT FEEDBACK</button>
+        </div>
+        <div id="liveMap"></div>
+        <span class="help-icon">?</span>
+      </div>
+    </main>
+
+    <!-- Route Planner -->
+    <main id="route-planner" class="page">
+      <section class="route-planner-section">
+        <h1 class="page-title">Route Planner</h1>
+        <div class="route-inputs">
+          <div class="input-row">
+            <span class="icon-pin"></span>
+            <input type="text" id="route-start-postal" placeholder="请输入起点（邮编/地名/MRT station）" />
+            <span class="icon-plane swap"></span>
+            <input type="text" id="route-end-postal" placeholder="请输入终点（邮编/地名/MRT station）" />
+          </div>
+          <div class="route-actions">
+            <button type="button" class="pref-btn"><span class="icon-info"></span> PREFERENCE: FASTEST ROUTE</button>
+            <button type="button" class="btn-calculate" id="route-calculate-btn">CALCULATE</button>
+          </div>
+          <div class="route-planning-hint" id="route-planning-hint">Click CALCULATE to generate route plan.</div>
+          <div class="admin-sim-panel hidden" id="admin-sim-panel">
+            <h3>Admin Simulation Controls</h3>
+            <p>Toggle a standalone simulated route set (independent from user input).</p>
+            <div class="admin-sim-actions">
+              <button type="button" class="btn-dark" id="admin-toggle-sim-btn">GENERATE SIMULATION</button>
+            </div>
+            <div class="admin-sim-results" id="admin-sim-results"></div>
+          </div>
+        </div>
+      </section>
+      <div class="route-layout">
+        <div class="route-map-area">
+          <div id="plannerMap"></div>
+          <div class="routes-legend">
+            <div class="legend-title">ROUTES</div>
+            <div class="legend-item"><span class="bar blue"></span> FASTEST</div>
+            <div class="legend-item"><span class="bar green"></span> FEWER LIGHTS</div>
+            <div class="legend-item"><span class="bar orange"></span> BALANCED</div>
+          </div>
+        </div>
+        <aside class="route-details-panel">
+          <div class="panel-head">
+            <div>
+              <strong id="route-detail-title">FASTEST</strong>
+              <span class="panel-sub">ROUTE DETAILS</span>
+            </div>
+            <span class="icon-close">×</span>
+          </div>
+          <div class="panel-row"><span class="label">TIME</span><span id="route-detail-time">--</span></div>
+          <div class="panel-row"><span class="label">DISTANCE</span><span id="route-detail-distance">--</span></div>
+          <div class="panel-row"><span class="label">EXTRA DELAY</span><span id="route-detail-delay">--</span></div>
+          <div class="panel-row">
+            <span class="label">TRAFFIC</span>
+            <span id="route-detail-traffic"><span class="dot green"></span> --</span>
+          </div>
+          <div class="panel-row">
+            <span class="label">LIGHTS</span>
+            <span id="route-detail-lights"><span class="icon-traffic"></span> --</span>
+          </div>
+          <div class="panel-block">
+            <span class="label">ROUTE TYPE</span>
+            <p id="route-detail-type">--</p>
+          </div>
+          <div class="panel-block">
+            <span class="label">ADDITIONAL INFO</span>
+            <p id="route-detail-speed">Average speed: --</p>
+            <p id="route-detail-cameras">Cameras available: --</p>
+          </div>
+          <button type="button" class="btn-dark full" id="route-view-cameras-btn">VIEW LIVE CAMERAS</button>
+        </aside>
+      </div>
+      <section class="route-options">
+        <h2 class="subsection-title" id="route-options-title">ROUTE OPTIONS (0)</h2>
+        <div class="route-cards" id="route-cards"></div>
+      </section>
+    </main>
+
+    <!-- Weather -->
+    <main id="weather" class="page">
+  <section class="weather-awareness">
+    <h1 class="page-title">Weather Awareness</h1>
+    <p class="weather-desc">
+      Enter postal code, MRT Station, or Location for live weather data.
+    </p>
+
+    <div class="weather-search">
+      <input type="text" id="postalCode" placeholder="Enter location..." />
+      <button type="button" class="btn-search" id="searchBtn">🔍 SEARCH</button>
+    </div>
+  </section>
+
+  <div class="weather-cards">
+
+    <!-- LOCATION DETAILS -->
+    <div class="weather-card">
+      <h3 class="weather-card-title">LOCATION DETAILS</h3>
+      <div class="detail-row">
+        <span class="icon-pin"></span>
+        <strong>FULL ADDRESS</strong><br/>
+        <span id="loc-address">--</span>
+      </div>
+      <div class="detail-row">
+        <strong>POSTAL CODE</strong><br/>
+        <span id="loc-postal">--</span>
+      </div>
+      <div class="detail-row">
+        <strong>COORDINATES</strong><br/>
+        <span id="loc-coords">--</span>
+      </div>
+      <div class="detail-row">
+        <strong>BUILDING / LANDMARK</strong><br/>
+        <span id="loc-building">--</span>
+      </div>
+    </div>
+
+    <!-- CURRENT STATUS -->
+    <div class="weather-card">
+      <h3 class="weather-card-title">CURRENT STATUS</h3>
+
+      <div class="current-weather">
+        <span class="icon-cloud big"></span>
+        <span class="temp" id="weather-temp">--°C</span>
+      </div>
+
+      <p class="weather-condition" id="weather-desc">--</p>
+      <p class="feels-like" id="weather-feels">Feels like --°C</p>
+
+      <div class="weather-stats">
+        <div><strong>HUMIDITY</strong><br/><span id="weather-humidity">--%</span></div>
+        <div><strong>WIND</strong><br/><span id="weather-wind">-- m/s</span></div>
+        <div><strong>PRESSURE</strong><br/><span id="weather-pressure">-- hPa</span></div>
+        <div><strong>VISIBILITY</strong><br/><span id="weather-visibility">-- km</span></div>
+      </div>
+    </div>
+
+    <!-- TRAVEL ADVICE -->
+    <div class="weather-card">
+      <h3 class="weather-card-title">TRAVEL ADVICE</h3>
+      <ul class="advice-list" id="weather-advice">
+        <li>Enter a location to get advice.</li>
+      </ul>
+    </div>
+    
+    <!-- HOURLY FORECAST -->
+<section class="hourly-forecast">
+  <h2 class="subsection-title">HOURLY FORECAST (Next 24 Hours)</h2>
+
+  <div class="forecast-cards">
+
+    <div class="forecast-card">
+      <span class="time" id="forecast-time-1">--</span>
+      <span class="forecast-temp" id="forecast-temp-1">--°C</span>
+      <span class="forecast-desc" id="forecast-desc-1">--</span>
+      <span class="forecast-rain" id="forecast-rain-1"></span>
+    </div>
+
+    <div class="forecast-card">
+      <span class="time" id="forecast-time-2">--</span>
+      <span class="forecast-temp" id="forecast-temp-2">--°C</span>
+      <span class="forecast-desc" id="forecast-desc-2">--</span>
+      <span class="forecast-rain" id="forecast-rain-2"></span>
+    </div>
+
+    <div class="forecast-card">
+      <span class="time" id="forecast-time-3">--</span>
+      <span class="forecast-temp" id="forecast-temp-3">--°C</span>
+      <span class="forecast-desc" id="forecast-desc-3">--</span>
+      <span class="forecast-rain" id="forecast-rain-3"></span>
+    </div>
+
+  </div>
+</section>
+
+  </div>
+</main>
+
+    <!-- Alerts -->
+    <main id="alerts" class="page">
+      <div class="alerts-layout">
+        <div class="alerts-list">
+          <h1 class="section-head"><span class="icon-warning"></span> ROUTE INCIDENTS</h1>
+          <p class="alerts-sub">Live traffic updates along your typical routes.</p>
+          <section class="pinned-incidents" id="alerts-pinned-section">
+            <h2 class="subsection-title"><span class="icon-pin"></span> PINNED: NEARBY INCIDENTS</h2>
+            <div id="alerts-pinned-list"></div>
+          </section>
+          <section class="all-reports">
+            <h2 class="subsection-title">ALL TRAFFIC REPORTS</h2>
+            <div id="alerts-all-list"></div>
+          </section>
+        </div>
+        <div class="alerts-detail-placeholder" id="alerts-news-panel">
+          <span class="live-dot">INFO FEED</span>
+          <div class="placeholder-box" style="text-align:left;">
+            <h3 style="margin-bottom:8px;">Singapore Traffic Info</h3>
+            <div id="alerts-weekly-news-list"></div>
+            <hr style="margin:12px 0;border:none;border-top:1px solid #e5e7eb;" />
+            <div id="alerts-latest-rule"></div>
+          </div>
+        </div>
+      </div>
+    </main>
+    <main id="alert-detail" class="page">
+      <div class="alert-detail-layout">
+        <button id="alert-detail-back-btn" class="alert-back-btn" type="button">← Back to Alerts</button>
+        <h1 class="section-head"><span class="icon-warning"></span> INCIDENT DETAILS</h1>
+        <div id="alert-detail-content" class="alert-detail-content">
+          <p>Select an incident from Alerts.</p>
+        </div>
+      </div>
+    </main>
+  </div>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>

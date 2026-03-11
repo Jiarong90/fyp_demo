@@ -1,0 +1,101 @@
+{
+  "value": [
+    {
+      "incident_id": "MOCK-1",
+      "Type": "Accident",
+      "Message": "Accident on PIE (towards Changi) near Exit 14. Multiple vehicles involved. Rightmost lane blocked.",
+      "Latitude": 1.3301,
+      "Longitude": 103.9422,
+      "risk_level": "High",
+      "present_until_step": 2,
+      "estimated_impact_min": "15-25",
+      "estimated_impact_max": "30-45",
+      "notes": "full lifecycle, guaranteed resolve"
+    },
+    {
+      "incident_id": "MOCK-A",
+      "Type": "Vehicle breakdown",
+      "Message": "Vehicle Breakdown on AYE (towards MCE) after Alexandra Rd. Vehicle stalled in left lane. Recovery vehicle en route.",
+      "Latitude": 1.2959,
+      "Longitude": 103.8198,
+      "risk_level": "Medium",
+      "present_until_step": -1,
+      "estimated_impact_min": "10-15",
+      "estimated_impact_max": "20-30",
+      "notes": "always active, never clears"
+    },
+    {
+      "incident_id": "MOCK-B",
+      "Type": "Heavy Traffic",
+      "Message": "Heavy Traffic on CTE (towards AYE) between Ang Mo Kio Ave 1 and Braddell Rd. Congestion due to peak hour.",
+      "Latitude": 1.36,
+      "Longitude": 103.85,
+      "risk_level": "Low",
+      "present_until_step": 2,
+      "estimated_impact_min": "5-10",
+      "estimated_impact_max": "15-20",
+      "notes": "disappears, requires confirmation"
+    },
+    {
+      "incident_id": "MOCK-C",
+      "Type": "Roadworks",
+      "Message": "Roadworks on ECP (towards Changi Airport) between Fort Rd and Marine Parade. Left lane closed. Works expected to complete by 6 PM.",
+      "Latitude": 1.3,
+      "Longitude": 103.9,
+      "risk_level": "Medium",
+      "present_until_step": 2,
+      "estimated_impact_min": "20-30",
+      "estimated_impact_max": "45-60",
+      "notes": "needs second poll to mark resolved"
+    },
+    {
+      "incident_id": "MOCK-E",
+      "Type": "Vehicle breakdown",
+      "Message": "Vehicle Breakdown on TPE (towards PIE) at Seletar Expressway Entrance. Heavy vehicle breakdown. Emergency services on scene.",
+      "Latitude": 1.4013,
+      "Longitude": 103.864,
+      "risk_level": "High",
+      "present_until_step": 3,
+      "estimated_impact_min": "25-35",
+      "estimated_impact_max": "50-70",
+      "notes": "extended breakdown scenario"
+    },
+    {
+      "incident_id": "MOCK-F",
+      "Type": "Heavy Traffic",
+      "Message": "Heavy Traffic on PIE (towards Tuas) between Eng Neo Ave and CTE(SLE). Congestion building up. Expect delays.",
+      "Latitude": 1.3299,
+      "Longitude": 103.8637,
+      "risk_level": "Medium",
+      "present_until_step": 1,
+      "estimated_impact_min": "10-15",
+      "estimated_impact_max": "25-35",
+      "notes": "short peak-hour wave"
+    },
+    {
+      "incident_id": "MOCK-G",
+      "Type": "Accident",
+      "Message": "Accident on AYE (towards Jurong) after Lower Delta Rd. Two vehicles collided. Rightmost two lanes affected. Traffic police on scene.",
+      "Latitude": 1.2925,
+      "Longitude": 103.788,
+      "risk_level": "High",
+      "present_until_step": 4,
+      "estimated_impact_min": "30-45",
+      "estimated_impact_max": "60-90",
+      "notes": "serious accident, longer resolution"
+    },
+    {
+      "incident_id": "MOCK-H",
+      "Type": "Roadworks",
+      "Message": "Roadworks on KPE (towards ECP) between Defu Lane 1 and Tampines Ave 10. Night works. Two lanes closed.",
+      "Latitude": 1.35,
+      "Longitude": 103.92,
+      "risk_level": "Medium",
+      "present_until_step": 1,
+      "estimated_impact_min": "15-20",
+      "estimated_impact_max": "30-40",
+      "notes": "scheduled roadworks"
+    }
+  ],
+  "resolution_absent_polls": 2
+}

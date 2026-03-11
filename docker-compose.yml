@@ -1,0 +1,35 @@
+version: "3.9"
+
+services:
+  db:
+    image: postgres:16
+    container_name: fyp_demo_db
+    environment:
+      POSTGRES_DB: fyp_demo
+      POSTGRES_USER: fyp_demo
+      POSTGRES_PASSWORD: fyp_demo
+    ports:
+      - "5432:5432"
+    volumes:
+      - fyp_demo_pgdata:/var/lib/postgresql/data
+
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: fyp_demo_web
+    depends_on:
+      - db
+    environment:
+      PORT: 3000
+      DATABASE_URL: postgresql://fyp_demo:fyp_demo@db:5432/fyp_demo
+      PYTHON_BIN: python3
+      MAIL_DEV_MODE: "true"
+      RATE_LIMIT_WINDOW_MS: 60000
+      RATE_LIMIT_MAX: 180
+      AUTH_RATE_LIMIT_MAX: 40
+    ports:
+      - "3000:3000"
+
+volumes:
+  fyp_demo_pgdata:
