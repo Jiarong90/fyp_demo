@@ -20,7 +20,18 @@
         <input type="text" class="search-input" placeholder="Search location, route, or incident..." />
       </div>
       <div class="header-right">
+        <div class="alerts-dropdown-wrap" id="alerts-toggle">
         <span class="icon-bell"></span>
+        <span id="nav-alert-badge" class="nav-badge hidden">0</span>
+          
+        <div class="alerts-nav-dropdown hidden" id="alerts-nav-dropdown">
+          <div class="dropdown-header"></div>
+            <ul id="nav-alerts-list">
+              <li class="no-alerts">No new alerts.</li>
+            </ul>
+        </div>
+        </div>
+     
         <!-- 未登录：显示 LOGIN 按钮 -->
         <a href="#login" class="btn-header-login" id="header-login-btn">LOGIN</a>
         <!-- 已登录：显示头像与下拉 -->
@@ -44,6 +55,9 @@
       <a href="#map-view" class="nav-tab" data-page="map-view">Map View</a>
       <a href="#route-planner" class="nav-tab" data-page="route-planner">Route Planner</a>
       <a href="#weather" class="nav-tab" data-page="weather">Weather</a>
+      <!-- Habit Routes part add-on -->
+      <a href="#habit-routes" class="nav-tab" data-page="habit-routes">Habit Routes</a>
+      
       <a href="#alerts" class="nav-tab" data-page="alerts">Alerts</a>
       <a href="#admin-users" class="nav-tab hidden" data-page="admin-users" id="admin-users-tab">Admin Users</a>
     </nav>
@@ -610,6 +624,35 @@
       </div>
     </main>
 
+    <!-- Habit Routes -->
+    <main id="habit-routes" class="page">
+      <section class="habit-routes-page">
+        <div class="habit-routes-head">
+          <div>
+            <h1 class="page-title">Habit Routes</h1>
+            <p class="alerts-sub">Manage saved routes and monitor live traffic conditions.</p>
+          </div>
+          <button type="button" class="btn-dark" id="habit-routes-refresh-btn">REFRESH</button>
+        </div>
+
+        <div class="habit-routes-layout">
+          <aside class="habit-routes-sidebar">
+            <div class="habit-routes-list-card">
+              <h2 class="subsection-title">MY ROUTES</h2>
+              <div id="habit-routes-list"></div>
+            </div>
+          </aside>
+
+          <div class="habit-routes-map-wrap">
+            <div class="habit-routes-map-toolbar">
+              <button type="button" class="btn-dark" id="habit-routes-clear-map-btn">CLEAR MAP</button>
+            </div>
+            <div id="habitRoutesMap"></div>
+          </div>
+        </div>
+      </section>
+    </main>
+
     <!-- Alerts -->
     <main id="alerts" class="page">
       <div class="alerts-layout">
@@ -779,7 +822,10 @@
   </div>
   <div class="feedback-toast" id="feedbackToast">Feedback submitted. Thank you for helping the community.</div>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <!-- Added Supabase -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="ml-traffic-model.js"></script>
   <script src="script.js"></script>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </body>
 </html>
